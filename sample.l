@@ -10,7 +10,7 @@ gcc -o sample y.tab.c
 */
 
 %{  
-	#include"y.tab.h"
+	#include"sample.tab.h"
 	extern int yylval;
 %}
 
