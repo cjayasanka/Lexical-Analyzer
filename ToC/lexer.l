@@ -1,5 +1,6 @@
 
-
+%x comment 
+%x foo
 
 
 %{                                                                                          
@@ -10,7 +11,8 @@
  	}
 
 
-	extern int line_number;                                                                     
+	extern int line_number; 
+	int comment_caller;                                                                    
 %}                 
 
 
@@ -19,6 +21,23 @@
 
 
 %% 
+
+
+"/*" {comment_caller = INITIAL;
+    BEGIN(comment);
+      }
+
+     <foo>"/*"  {
+      comment_caller = foo;
+      BEGIN(comment);
+      }
+
+     <comment>[^*\n]*    {}
+     <comment>"*"+[^*/\n]*   {}
+     <comment>\n       {++line_number;}
+     <comment>"*"+"/"    BEGIN(comment_caller);
+
+
 "if"						return IF;
 "else"						return ELSE;
 "int"						return INT;
@@ -50,10 +69,9 @@
 [\n] 						{ line_number++;}
 [ \t\r]+ 					;
 
+
+
 .                           { printf("Syntax Error! %s\n", yytext);}
-
-
-
-                                                
+                                            
                                                                    
 %%
